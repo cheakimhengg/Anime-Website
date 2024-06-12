@@ -28,6 +28,7 @@ function LoadMore() {
   }, [inView, searchQuery]);
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    event.preventDefault();
     setSearchQuery(event.target.value);
     setData([]);
     page = 1;
