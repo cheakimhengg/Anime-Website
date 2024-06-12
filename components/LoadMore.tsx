@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
-import AnimeCard from "./AnimeCard";
+import AnimeCard, { AnimeProp } from "./AnimeCard";
 import { fetchAnime } from "@/app/action";
 
 let page = 1;
@@ -17,14 +17,8 @@ function LoadMore() {
 
   const fetchData = async (page: number, searchQuery: string) => {
     const res = await fetchAnime(page, searchQuery);
-    // Sort the results by popularity or relevance before updating state
-    const sortedRes = res.sort(
-      (a: { popularity: number }, b: { popularity: number }) => {
-        // Assuming each item has a popularity property, adjust this accordingly
-        return b.popularity - a.popularity;
-      }
-    );
-    setData((prevData) => [...prevData, ...sortedRes]);
+    res.sort((a: AnimeProp, b: AnimeProp) => a.episodes - b.episodes);
+    setData((prevData) => [...prevData, ...res]);
   };
 
   useEffect(() => {
