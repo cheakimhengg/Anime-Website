@@ -17,7 +17,6 @@ function LoadMore() {
 
   const fetchData = async (page: number, searchQuery: string) => {
     const res = await fetchAnime(page, searchQuery);
-    res.sort((a: AnimeProp, b: AnimeProp) => a.episodes - b.episodes);
     setData((prevData) => [...prevData, ...res]);
   };
 
@@ -29,9 +28,10 @@ function LoadMore() {
   }, [inView, searchQuery]);
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(event.target.value);
+    event.preventDefault;
     setData([]);
     page = 1;
+    setSearchQuery(event.target.value);
   };
 
   return (
