@@ -14,6 +14,7 @@ function LoadMore() {
   const { ref, inView } = useInView({});
   const [data, setData] = useState<AnimeCard[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null); //
 
   const fetchData = async (page: number, searchQuery: string) => {
     const res = await fetchAnime(page, searchQuery);
@@ -28,10 +29,17 @@ function LoadMore() {
   }, [inView, searchQuery]);
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    event.preventDefault();
-    setSearchQuery(event.target.value);
+    const { value } = event.target;
+    setSearchQuery(value);
     setData([]);
     page = 1;
+    if (timeoutId) {
+      clearTimeout(timeoutId); // Clear the previous timeout if exists
+    }
+    const id = setTimeout(() => {
+      fetchData(1, value); // Call fetchData after a delay
+    }, 500); // Adjust the debounce delay as needed
+    setTimeoutId(id); // Store the new timeout ID
   };
 
   return (
