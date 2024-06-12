@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useInView } from "react-intersection-observer";
 import AnimeCard, { AnimeProp } from "./AnimeCard";
 import { fetchAnime } from "@/app/action";
@@ -14,6 +14,7 @@ function LoadMore() {
   const { ref, inView } = useInView({});
   const [data, setData] = useState<AnimeCard[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const searchTimeout = useRef<NodeJS.Timeout | null>(null);
 
   const fetchData = async (page: number, searchQuery: string) => {
     const res = await fetchAnime(page, searchQuery);
@@ -25,13 +26,23 @@ function LoadMore() {
       fetchData(page, searchQuery);
       page++;
     }
-  }, [inView, searchQuery]);
+  }, [inView]);
+
+  useEffect(() => {
+    page = 1;
+    setData([]);
+    fetchData(page, searchQuery);
+    page++;
+  }, [searchQuery]);
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    event.preventDefault;
-    setData([]);
-    page = 1;
-    setSearchQuery(event.target.value);
+    const query = event.target.value;
+    if (searchTimeout.current) {
+      clearTimeout(searchTimeout.current);
+    }
+    searchTimeout.current = setTimeout(() => {
+      setSearchQuery(query);
+    }, 500);
   };
 
   return (
@@ -42,7 +53,6 @@ function LoadMore() {
           <input
             type="text"
             placeholder="Search Anime"
-            value={searchQuery}
             onChange={handleSearch}
             className="p-2 w-[70%] border border-white rounded"
           />
@@ -54,7 +64,7 @@ function LoadMore() {
       <section className="flex justify-center items-center w-full">
         <div ref={ref}>
           <Image
-            src="./spinner.svg"
+            src="/spinner.svg"
             alt="spinner"
             width={56}
             height={56}
