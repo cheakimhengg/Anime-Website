@@ -26,13 +26,15 @@ function LoadMore() {
       fetchData(page, searchQuery);
       page++;
     }
-  }, [inView]);
+  }, [inView, searchQuery]);
 
   useEffect(() => {
-    page = 1;
-    setData([]);
-    fetchData(page, searchQuery);
-    page++;
+    if (searchQuery) {
+      page = 1;
+      setData([]);
+      fetchData(page, searchQuery);
+      page++;
+    }
   }, [searchQuery]);
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,7 +44,7 @@ function LoadMore() {
     }
     searchTimeout.current = setTimeout(() => {
       setSearchQuery(query);
-    }, 500);
+    }, 300);
   };
 
   return (
